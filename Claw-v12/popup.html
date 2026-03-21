@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<title>Claw</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#1c1c1e;--bg2:#242426;--bg3:#2a2a2d;--bg4:#323235;
+  --bd:#3a3a3e;--bd2:#48484d;
+  --t:#f0efed;--t2:#a8a8a8;--t3:#6b6b6b;
+  --ac:#d4a85a;--ac2:#c49444;--ok:#5a9e6f;--err:#c46060;
+  --r:10px;--rsm:7px;--tr:.16s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{width:320px;background:var(--bg);color:var(--t);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px;}
+hr{border:none;height:1px;background:var(--bd);}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;gap:10px;padding:13px 15px 12px;border-bottom:1px solid var(--bd);background:var(--bg2);}
+.hdr-icon{width:26px;height:26px;flex-shrink:0;object-fit:contain;cursor:pointer;transition:transform .25s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 5px rgba(212,168,90,.25));}
+.hdr-icon:hover{transform:scale(1.15) rotate(-10deg);}
+.hdr-name{font-size:14px;font-weight:600;color:var(--t);letter-spacing:-.1px;}
+.hdr-sub{font-size:9.5px;color:var(--t3);margin-top:1px;display:flex;align-items:center;gap:5px;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:all .3s;}
+.live-dot.on{background:var(--ok);box-shadow:0 0 0 2px rgba(90,158,111,.25);animation:pulse 2s ease-in-out infinite;}
+.v-badge{margin-left:auto;font-size:9px;font-weight:500;color:var(--t3);background:var(--bg3);border:1px solid var(--bd);border-radius:4px;padding:2px 7px;}
+
+/* BODY */
+.body{padding:11px 14px 14px;display:flex;flex-direction:column;gap:7px;}
+.sec{font-size:9.5px;font-weight:600;color:var(--t3);letter-spacing:.7px;text-transform:uppercase;padding:3px 0 1px;}
+
+/* CARD */
+.card{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;transition:border-color var(--tr);animation:fadeUp .2s ease both;}
+.card:hover{border-color:var(--bd2);}
+.card-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.card-left{display:flex;align-items:center;gap:9px;flex:1;min-width:0;}
+
+/* CARD ICON — cada um tem seu SVG único */
+.card-icon{
+  width:30px;height:30px;border-radius:8px;
+  background:var(--bg4);border:1px solid var(--bd2);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all var(--tr);
+}
+.card-icon svg{width:15px;height:15px;color:var(--t2);transition:color var(--tr);}
+.card:hover .card-icon{background:var(--bd);border-color:var(--bd2);}
+.card:hover .card-icon svg{color:var(--t);}
+
+.card-info{flex:1;min-width:0;}
+.card-label{font-size:12.5px;font-weight:500;color:var(--t);}
+.card-sub{font-size:10px;color:var(--t3);margin-top:1px;}
+
+/* PILL */
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:500;color:var(--t3);background:var(--bg4);border:1px solid var(--bd);border-radius:4px;padding:2px 7px;margin-top:5px;transition:all .22s ease;}
+.pill-dot{width:5px;height:5px;border-radius:50%;background:var(--t3);transition:all .25s;}
+.pill.on{color:var(--ok);background:rgba(90,158,111,.1);border-color:rgba(90,158,111,.3);}
+.pill.on .pill-dot{background:var(--ok);box-shadow:0 0 0 2px rgba(90,158,111,.2);animation:pulse 2s ease-in-out infinite;}
+
+/* TOGGLE */
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.track{position:absolute;inset:0;background:var(--bg4);border:1px solid var(--bd2);border-radius:22px;cursor:pointer;transition:background .2s,border-color .2s;}
+.track::before{content:'';position:absolute;width:16px;height:16px;top:2px;left:2px;background:var(--t3);border-radius:50%;transition:transform .22s cubic-bezier(.34,1.56,.64,1),background .2s;box-shadow:0 1px 4px rgba(0,0,0,.4);}
+.toggle input:checked+.track{background:var(--ac);border-color:var(--ac2);}
+.toggle input:checked+.track::before{transform:translateX(18px);background:#fff;}
+
+/* SLIDER */
+.slider-row{display:flex;align-items:center;gap:10px;}
+.slider-label{font-size:10.5px;color:var(--t2);flex:1;}
+.slider-val{font-size:10.5px;font-weight:600;color:var(--ac);min-width:28px;text-align:right;}
+input[type=range]{flex:1;height:3px;border-radius:3px;appearance:none;background:var(--bg4);border:none;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--ac);border:2px solid var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.4);cursor:pointer;transition:transform .15s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
+
+/* SELECT */
+select{width:100%;background:var(--bg4);border:1px solid var(--bd2);border-radius:var(--rsm);color:var(--t2);font-family:'Inter',system-ui,sans-serif;font-size:11px;padding:7px 28px 7px 10px;outline:none;cursor:pointer;transition:border-color var(--tr);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b6b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+select:focus{border-color:var(--ac);}
+select option{background:var(--bg3);color:var(--t);}
+
+/* CHAT */
+.chat-wrap{background:var(--bg3);border:1px solid var(--bd);border-radius:13px;overflow:hidden;transition:border-color .2s;}
+.chat-wrap:focus-within{border-color:var(--bd2);}
+.img-prev{display:none;padding:8px 10px 0;position:relative;}
+.img-prev.show{display:block;}
+.img-prev img{max-height:70px;border-radius:8px;border:1px solid var(--bd);object-fit:cover;display:block;}
+.img-rm{position:absolute;top:10px;right:13px;width:18px;height:18px;border-radius:50%;background:var(--bg4);border:1px solid var(--bd2);color:var(--t2);font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1;}
+.img-rm:hover{color:var(--t);background:var(--bd);}
+.chat-ta{width:100%;padding:10px 12px 5px;background:transparent;border:none;outline:none;color:var(--t);font-family:'Inter',system-ui,sans-serif;font-size:12px;line-height:1.5;resize:none;max-height:100px;min-height:36px;overflow-y:auto;}
+.chat-ta::placeholder{color:var(--t3);}
+.chat-bot{display:flex;align-items:center;justify-content:space-between;padding:3px 8px 7px;}
+.btn-icon{width:28px;height:28px;border-radius:7px;background:transparent;border:none;color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
+.btn-icon:hover{background:var(--bg4);color:var(--t2);}
+.btn-icon svg{width:14px;height:14px;}
+.btn-send{width:28px;height:28px;border-radius:7px;background:var(--bg4);border:1px solid var(--bd2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s,transform .1s;flex-shrink:0;}
+.btn-send:hover{background:var(--bd);}
+.btn-send:active{transform:scale(.92);}
+.btn-send.ready{background:var(--t);border-color:var(--t);}
+.btn-send.ready svg{color:var(--bg);}
+.btn-send.loading svg{animation:spin .7s linear infinite;}
+.btn-send svg{width:13px;height:13px;color:var(--t3);transition:color .15s;}
+#file-input{display:none;}
+
+/* RESPONSE */
+.resp{display:none;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:9px 11px;font-size:11px;color:var(--t2);line-height:1.6;max-height:150px;overflow-y:auto;white-space:pre-wrap;}
+.resp.show{display:block;animation:fadeUp .2s ease;}
+.resp.loading{display:block;height:38px;background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.stat-card{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;text-align:center;transition:border-color var(--tr);animation:fadeUp .2s ease both;}
+.stat-card:hover{border-color:var(--bd2);}
+.stat-num{font-size:24px;font-weight:600;color:var(--t);line-height:1.1;margin-bottom:3px;}
+.stat-label{font-size:9px;color:var(--t3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+.stat-today{font-size:9.5px;color:var(--ac);margin-top:3px;font-weight:500;}
+.hist-list{display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;}
+.hist-item{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rsm);padding:7px 10px;animation:fadeUp .15s ease both;}
+.hist-q{font-size:10.5px;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hist-a{font-size:10px;color:var(--ok);margin-top:2px;font-weight:500;}
+.hist-meta{font-size:9px;color:var(--t3);margin-top:1px;}
+.hist-empty{text-align:center;color:var(--t3);font-size:11px;padding:20px 0;}
+.row-between{display:flex;align-items:center;justify-content:space-between;}
+.cache-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--rsm);padding:9px 12px;}
+.cache-num{font-size:14px;font-weight:600;color:var(--ac);margin-top:1px;}
+.cache-lbl{font-size:10.5px;color:var(--t2);}
+.btn-sm{background:var(--bg4);border:1px solid var(--bd2);border-radius:6px;color:var(--t2);font-family:'Inter',sans-serif;font-size:10px;font-weight:500;padding:4px 10px;cursor:pointer;transition:all .15s;}
+.btn-sm:hover{background:var(--bd);color:var(--t);}
+.btn-sm.danger:hover{background:rgba(196,96,96,.12);border-color:rgba(196,96,96,.4);color:var(--err);}
+
+/* FOOTER */
+.footer{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding-top:2px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;background:var(--bg3);border:1px solid var(--bd);border-radius:4px;font-size:9px;color:var(--t3);font-weight:500;transition:border-color var(--tr);}
+.badge:hover{border-color:var(--bd2);}
+.badge-dot{width:5px;height:5px;border-radius:50%;}
+.badge-dot.ok{background:var(--ok);}
+</style>
+</head>
+<body>
+
+<!-- HEADER com ícone do Claude -->
+<div class="hdr">
+  <img class="hdr-icon" id="mascot" src="data:image/png;base64,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" alt="Claw"/>
+  <div>
+    <div class="hdr-name">Claw</div>
+    <div class="hdr-sub">
+      <span class="live-dot" id="globalDot"></span>
+      <span id="globalStatus">Inativo</span>
+    </div>
+  </div>
+  <span class="v-badge">v10</span>
+</div>
+
+<div class="body">
+
+<div class="sec">Jogos</div>
+
+<!-- Kahoot — raio -->
+<div class="card" style="animation-delay:0ms">
+  <div class="card-row">
+    <div class="card-left">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+      <div class="card-info">
+        <div class="card-label">Kahoot</div>
+        <div class="card-sub">Destaca a resposta certa</div>
+        <div class="pill" id="k-pill"><span class="pill-dot"></span><span id="k-status">Desativado</span></div>
+      </div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="tog-k"/><span class="track"></span></label>
+  </div>
+</div>
+
+<!-- StopotS — octógono stop -->
+<div class="card" style="animation-delay:50ms">
+  <div class="card-row">
+    <div class="card-left">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/></svg></div>
+      <div class="card-info">
+        <div class="card-label">StopotS</div>
+        <div class="card-sub">Preenche todas as categorias</div>
+        <div class="pill" id="s-pill"><span class="pill-dot"></span><span id="s-status">Desativado</span></div>
+      </div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="tog-s"/><span class="track"></span></label>
+  </div>
+</div>
+
+<hr/>
+<div class="sec">Tradutor</div>
+
+<!-- Tradutor — globo -->
+<div class="card" style="animation-delay:90ms;flex-direction:column;gap:8px;">
+  <div class="card-row">
+    <div class="card-left">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <div class="card-info">
+        <div class="card-label">Tradutor universal</div>
+        <div class="card-sub">Qualquer idioma → PT-BR</div>
+        <div class="pill" id="tr-pill"><span class="pill-dot"></span><span id="tr-status">Desativado</span></div>
+      </div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="tog-tr"/><span class="track"></span></label>
+  </div>
+  <select id="tr-lang">
+    <option value="auto">Detectar automaticamente</option>
+    <option value="en">Inglês</option>
+    <option value="es">Espanhol</option>
+    <option value="fr">Francês</option>
+    <option value="de">Alemão</option>
+    <option value="it">Italiano</option>
+    <option value="ja">Japonês</option>
+    <option value="zh">Chinês</option>
+    <option value="ko">Coreano</option>
+  </select>
+</div>
+
+<div class="chat-wrap" style="animation:fadeUp .2s ease 120ms both">
+  <textarea class="chat-ta" id="trInput" placeholder="Cole texto para traduzir..." rows="2" style="min-height:40px;"></textarea>
+  <div class="chat-bot">
+    <span style="font-size:9.5px;color:var(--t3);padding-left:4px;flex:1;">ou selecione texto em qualquer página</span>
+    <button class="btn-send ready" id="btnTr">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 8 1 12 5 16"/><polyline points="19 8 23 12 19 16"/><line x1="1" y1="12" x2="23" y2="12"/></svg>
+    </button>
+  </div>
+</div>
+<div class="resp" id="trResp"></div>
+
+<hr/>
+<div class="sec">Configurações</div>
+
+<!-- Delay — relógio -->
+<div class="card" style="animation-delay:140ms;flex-direction:column;gap:10px;">
+  <div class="card-row">
+    <div class="card-left">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="card-info">
+        <div class="card-label">Delay humano</div>
+        <div class="card-sub">Espera antes de marcar</div>
+      </div>
+    </div>
+  </div>
+  <div class="slider-row">
+    <span class="slider-label">Tempo de espera</span>
+    <input type="range" id="delaySlider" min="0" max="8000" step="500" value="0"/>
+    <span class="slider-val" id="delayVal">0s</span>
+  </div>
+</div>
+
+<!-- Stealth — olho cortado -->
+<div class="card" style="animation-delay:180ms">
+  <div class="card-row">
+    <div class="card-left">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></div>
+      <div class="card-info">
+        <div class="card-label">Modo stealth</div>
+        <div class="card-sub">Alt+H oculta o overlay</div>
+      </div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="tog-stealth"/><span class="track"></span></label>
+  </div>
+</div>
+
+<!-- Modo professor — coração (irônico: erra de propósito) -->
+<div class="card" style="animation-delay:210ms;flex-direction:column;gap:10px;">
+  <div class="card-row">
+    <div class="card-left">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <div class="card-info">
+        <div class="card-label">Modo professor</div>
+        <div class="card-sub">Erra de propósito às vezes</div>
+      </div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="tog-miss"/><span class="track"></span></label>
+  </div>
+  <div id="missRow" style="display:none">
+    <div class="slider-row">
+      <span class="slider-label">Errar 1 a cada</span>
+      <input type="range" id="missSlider" min="3" max="10" step="1" value="5"/>
+      <span class="slider-val" id="missVal">5</span>
+    </div>
+  </div>
+</div>
+
+<hr/>
+<div class="sec">Cache StopotS</div>
+
+<!-- Cache — banco de dados -->
+<div class="card" style="animation-delay:240ms;flex-direction:column;gap:8px;">
+  <div class="card-row">
+    <div class="card-left">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+      <div class="card-info">
+        <div class="card-label">Cache turbo</div>
+        <div class="card-sub">Responde offline quando já sabe</div>
+      </div>
+    </div>
+    <label class="toggle"><input type="checkbox" id="tog-cache" checked/><span class="track"></span></label>
+  </div>
+  <div class="cache-row">
+    <div>
+      <div class="cache-lbl">Entradas salvas</div>
+      <div class="cache-num" id="cacheCount">0</div>
+    </div>
+    <button class="btn-sm danger" id="clearCache">Limpar</button>
+  </div>
+</div>
+
+<hr/>
+<div class="sec">Estatísticas</div>
+
+<div class="stats-grid">
+  <div class="stat-card" style="animation-delay:260ms">
+    <div class="stat-num" id="statKTotal">0</div>
+    <div class="stat-label">Kahoot</div>
+    <div class="stat-today" id="statKToday">0 hoje</div>
+  </div>
+  <div class="stat-card" style="animation-delay:300ms">
+    <div class="stat-num" id="statSTotal">0</div>
+    <div class="stat-label">StopotS</div>
+    <div class="stat-today" id="statSToday">0 hoje</div>
+  </div>
+</div>
+
+<div class="row-between">
+  <div class="sec" style="padding:0">Histórico recente</div>
+  <button class="btn-sm danger" id="clearHistory">Limpar</button>
+</div>
+<div class="hist-list" id="historyList">
+  <div class="hist-empty">Nenhuma atividade ainda</div>
+</div>
+
+<hr/>
+<div class="sec">Pergunte à IA</div>
+
+<!-- IA — balão de chat -->
+<div class="chat-wrap" style="animation:fadeUp .2s ease 320ms both">
+  <div class="img-prev" id="imgPreview">
+    <img id="imgThumb" src="" alt=""/>
+    <button class="img-rm" id="imgRemove">✕</button>
+  </div>
+  <textarea class="chat-ta" id="chatInput" placeholder="Tire dúvidas ou mande print da questão..." rows="2"></textarea>
+  <div class="chat-bot">
+    <div style="display:flex;align-items:center;gap:1px;">
+      <button class="btn-icon" id="btnAttach">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </button>
+      <input type="file" id="file-input" accept="image/*"/>
+    </div>
+    <button class="btn-send" id="btnSend">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    </button>
+  </div>
+</div>
+<div class="resp" id="chatResp"></div>
+
+<hr/>
+<div class="footer">
+  <span class="badge"><span class="badge-dot ok"></span>Groq</span>
+  <span class="badge">llama-3.3-70b</span>
+  <span class="badge">llama-4-scout · visão</span>
+  <span class="badge" style="margin-left:auto;color:var(--ok);border-color:rgba(90,158,111,.3)">grátis</span>
+</div>
+
+</div>
+
+<script src="popup.js"></script>
+<script>
+document.getElementById('mascot').addEventListener('click', () => {
+  const m = document.getElementById('mascot');
+  m.style.transform = 'scale(1.2) rotate(15deg)';
+  setTimeout(() => m.style.transform = '', 350);
+});
+
+function updateDot() {
+  const on = ['tog-k','tog-s','tog-tr'].some(id => document.getElementById(id).checked);
+  document.getElementById('globalDot').classList.toggle('on', on);
+  const active = [
+    document.getElementById('tog-k').checked && 'Kahoot',
+    document.getElementById('tog-s').checked && 'StopotS',
+    document.getElementById('tog-tr').checked && 'Tradutor',
+  ].filter(Boolean);
+  document.getElementById('globalStatus').textContent = on ? active.join(' · ') : 'Inativo';
+}
+['tog-k','tog-s','tog-tr'].forEach(id => document.getElementById(id).addEventListener('change', updateDot));
+updateDot();
+
+const ds = document.getElementById('delaySlider'), dv = document.getElementById('delayVal');
+ds.addEventListener('input', () => { const v=+ds.value; dv.textContent=v===0?'0s':(v/1000).toFixed(1)+'s'; chrome.storage.sync.set({kahoot_delay:v}); });
+chrome.storage.sync.get('kahoot_delay', d => { if(d.kahoot_delay!=null){ds.value=d.kahoot_delay;ds.dispatchEvent(new Event('input'));} });
+
+const togMiss=document.getElementById('tog-miss'), missRow=document.getElementById('missRow');
+const ms=document.getElementById('missSlider'), mv=document.getElementById('missVal');
+togMiss.addEventListener('change', () => { missRow.style.display=togMiss.checked?'block':'none'; chrome.storage.sync.set({miss_on:togMiss.checked}); });
+ms.addEventListener('input', () => { mv.textContent=ms.value; chrome.storage.sync.set({miss_n:+ms.value}); });
+
+document.getElementById('clearCache').addEventListener('click', () => {
+  if(!confirm('Limpar todo o cache do Stop?')) return;
+  chrome.storage.local.remove('claw_stop_cache', () => { document.getElementById('cacheCount').textContent='0'; });
+});
+chrome.storage.local.get('claw_stop_cache', d => {
+  document.getElementById('cacheCount').textContent = d.claw_stop_cache ? Object.keys(d.claw_stop_cache).length : 0;
+});
+
+function refreshStats() {
+  chrome.storage.local.get(['claw_stats','claw_history'], d => {
+    const s=d.claw_stats||{}, today=new Date().toDateString(), isToday=s.last_date===today;
+    document.getElementById('statKTotal').textContent = s.kahoot_total||0;
+    document.getElementById('statSTotal').textContent = s.stop_total||0;
+    document.getElementById('statKToday').textContent = (isToday?s.kahoot_today:0)+' hoje';
+    document.getElementById('statSToday').textContent = (isToday?s.stop_today:0)+' hoje';
+    const h=d.claw_history||[], list=document.getElementById('historyList');
+    if(!h.length){ list.innerHTML='<div class="hist-empty">Nenhuma atividade ainda</div>'; return; }
+    list.innerHTML=h.slice(0,20).map((item,i)=>{
+      const t=new Date(item.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      return item.type==='kahoot'
+        ?`<div class="hist-item" style="animation-delay:${i*25}ms"><div class="hist-q">${item.question||''}</div><div class="hist-a">${item.answer||''}</div><div class="hist-meta">Kahoot · ${t}</div></div>`
+        :`<div class="hist-item" style="animation-delay:${i*25}ms"><div class="hist-q">Letra ${item.letter} — ${(item.cats||[]).length} categorias</div><div class="hist-a">${(item.answers||[]).filter(Boolean).slice(0,3).join(', ')}</div><div class="hist-meta">StopotS · ${t}</div></div>`;
+    }).join('');
+  });
+}
+refreshStats();
+document.getElementById('clearHistory').addEventListener('click', () => { chrome.storage.local.remove('claw_history', () => refreshStats()); });
+document.getElementById('tog-stealth').addEventListener('change', e => chrome.storage.sync.set({stealth:e.target.checked}));
+
+chrome.storage.sync.get(['k_on','s_on','tr_on','tr_lang','stealth','miss_on','miss_n'], d => {
+  if(d.k_on)   { document.getElementById('tog-k').checked=true;  setPill('k',true);  }
+  if(d.s_on)   { document.getElementById('tog-s').checked=true;  setPill('s',true);  }
+  if(d.tr_on)  { document.getElementById('tog-tr').checked=true; setPill('tr',true); }
+  if(d.tr_lang) document.getElementById('tr-lang').value=d.tr_lang;
+  if(d.stealth) document.getElementById('tog-stealth').checked=true;
+  if(d.miss_on) { togMiss.checked=true; missRow.style.display='block'; }
+  if(d.miss_n)  { ms.value=d.miss_n; mv.textContent=d.miss_n; }
+  updateDot();
+});
+</script>
+</body>
+</html>
