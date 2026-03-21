@@ -21,14 +21,14 @@ Claw é uma extensão Chrome que usa IA (Groq + Llama 3.3) para responder automa
 
 ## Funcionalidades
 
-### 🎮 Kahoot
+###  Kahoot
 - Detecta a pergunta em tempo real com sistema de seletores em 3 camadas
 - Consulta o Groq e **destaca** a resposta correta com outline branco
 - Apaga as alternativas erradas (13% de opacidade)
 - Suporte a múltipla escolha, verdadeiro/falso e questões dissertativas
 - Overlay discreto no canto da tela com status em tempo real
 
-### 🛑 StopotS
+###  StopotS
 - Detecta a **letra sorteada** automaticamente com 12 seletores + fallback por tamanho de fonte
 - Expande **120+ abreviações** (PCH, FDS, MSÉ, CEP, JLR, PDA, MST, SNB...)
 - Preenche todos os inputs com o trick correto do Angular (`nativeInputValueSetter` + evento `input` com `bubbles: true`)
@@ -41,7 +41,7 @@ Claw é uma extensão Chrome que usa IA (Groq + Llama 3.3) para responder automa
 - Auto-traduz perguntas do Kahoot quando estão em inglês, espanhol, etc.
 - Suporte: Inglês · Espanhol · Francês · Alemão · Italiano · Japonês · Chinês · Coreano · Árabe · Russo
 
-### ⚙️ Configurações
+###  Configurações
 
 | Funcionalidade | Descrição |
 |---|---|
@@ -50,7 +50,7 @@ Claw é uma extensão Chrome que usa IA (Groq + Llama 3.3) para responder automa
 | **Modo professor** | Erra de propósito 1 a cada X perguntas (configurável 3–10) |
 | **Cache turbo** | StopotS offline quando já conhece a letra + categoria |
 
-### 📊 Estatísticas
+### Estatísticas
 - Contador de perguntas respondidas (hoje e total)
 - Histórico das últimas 100 interações com data e hora
 - Painel de cache com contador e botão de limpeza
@@ -67,7 +67,7 @@ Claw é uma extensão Chrome que usa IA (Groq + Llama 3.3) para responder automa
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/onerddev/Claw.git
+git clone https://github.com/onerddev/Claw-Extension.git
 ```
 
 2. Abra o Chrome e acesse `chrome://extensions`
