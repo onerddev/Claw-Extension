@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "Claw",
+  "version": "23.0",
+  "description": "Agente IA universal · Chat flutuante · Plugins · Modo Estudo · Produtividade · Voz · Kahoot · StopotS. Por Emanuel Felipe.",
+  "permissions": ["activeTab","scripting","storage","tabs","tabCapture"],
+  "host_permissions": [
+    "https://kahoot.it/*","https://*.kahoot.it/*",
+    "https://stopots.com/*","https://*.stopots.com/*",
+    "https://api.groq.com/*","<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {"16":"icons/icon16.png","48":"icons/icon48.png","128":"icons/icon128.png"}
+  },
+  "background": {"service_worker": "background.js"},
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["memory.js","floating_chat.js","productivity.js","permissions.js","study_mode.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://kahoot.it/*","https://*.kahoot.it/*"],
+      "js": ["stats.js","kahoot.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://stopots.com/*","https://*.stopots.com/*"],
+      "js": ["stats.js","stopots.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.youtube.com/*","https://youtube.com/*"],
+      "js": ["plugins/youtube.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["plugins/gmail.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["plugins/whatsapp.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://docs.google.com/*"],
+      "js": ["plugins/google_docs.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [{"resources":["claude-icon.png","icons/*.png","plugins/*.js","popup.html","popup.js"],"matches":["<all_urls>"]}],
+  "icons": {"16":"icons/icon16.png","48":"icons/icon48.png","128":"icons/icon128.png"}
+}
